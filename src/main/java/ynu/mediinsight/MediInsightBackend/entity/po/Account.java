@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ynu.mediinsight.MediInsightBackend.entity.BaseData;
 
 import java.util.Date;
 
 @Data
 @TableName("account")
 @AllArgsConstructor
-public class Account {
+public class Account implements BaseData {
     @TableId(type = IdType.AUTO)
     Integer id;
     @TableField("username")

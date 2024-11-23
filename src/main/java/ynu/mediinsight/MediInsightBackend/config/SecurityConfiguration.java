@@ -60,7 +60,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // 定义无需认证的公共路径
-        var publicPaths = new String[]{"/doc/**", "/auth/**", "/captcha/**"};
+        var publicPaths = new String[]{"/doc/**", "/auth/**", "/captcha/**", "/error"};
         return http
                 // 配置接口访问权限
                 .authorizeHttpRequests(conf -> conf
@@ -112,11 +112,12 @@ public class SecurityConfiguration {
         AccountRole accountRole = accountRoleService.findRIDByUID(account.getId());
         Role role = roleService.findRoleByRID(accountRole.getRid());
         String token = jwtUtils.createJwt(user, account.getId(), account.getUsername());
-        AuthorizeVO authorizeVO = new AuthorizeVO();
-        authorizeVO.setExpire(jwtUtils.expireTime());
-        authorizeVO.setRole(role.getRolename());
-        authorizeVO.setToken(token);
-        authorizeVO.setUsername(account.getUsername());
+        AuthorizeVO authorizeVO = account.asViewObject(AuthorizeVO.class, vo -> {
+            vo.setExpire(jwtUtils.expireTime());
+            vo.setToken(token);
+            vo.setRole(role.getRolename());
+            vo.setUsername(account.getUsername());
+        });
         response.getWriter().write(RestBean.success(authorizeVO).asJsonString());
     }
 
