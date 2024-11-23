@@ -1,5 +1,6 @@
 package ynu.mediinsight.MediInsightBackend.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -7,13 +8,17 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ynu.mediinsight.MediInsightBackend.dto.request.EmailRegisterRO;
 import ynu.mediinsight.MediInsightBackend.entity.po.Account;
 import ynu.mediinsight.MediInsightBackend.mapper.AccountMapper;
+import ynu.mediinsight.MediInsightBackend.service.AccountRoleService;
 import ynu.mediinsight.MediInsightBackend.service.AccountService;
 import ynu.mediinsight.MediInsightBackend.utils.Const;
 import ynu.mediinsight.MediInsightBackend.utils.FlowUtils;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +34,12 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Resource
     StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    PasswordEncoder encoder;
+
+    @Resource
+    AccountRoleService accountRoleService;
 
     @Override
     public Account findAccountByUsernameOrEmail(String text) {
@@ -54,6 +65,44 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         }
     }
 
+    /**
+     * 邮件验证码注册账号操作，需要检查验证码是否正确以及邮箱、用户名是否存在重名
+     *
+     * @param ro 注册基本信息
+     * @return 操作结果，null表示正常，否则为错误原因
+     */
+    @Override
+    public String registerEmailAccount(EmailRegisterRO ro) {
+        String email = ro.getEmail();
+        String username = ro.getUsername();
+        String key = Const.VERIFY_EMAIL_DATA + email;
+        String code = stringRedisTemplate.opsForValue().get(key);
+        if (code == null) return "请先获取验证码";
+        if (!code.equals(ro.getCode())) return "验证码错误，请重新输入";
+        if (this.existsAccountByEmail(email)) return "此电子邮件已被其他用户注册";
+        if (this.existsAccountByUsername(username)) return "此用户名已被其他人注册，请更换一个新的用户名";
+        String password = encoder.encode(ro.getPassword());
+        Account account = new Account(null, username, password, 0, "男",
+                null, email, null, "北京", new Date(), null, 0);
+        if (this.save(account)) {
+            if (accountRoleService.registerAccountRole(account.getId())) {
+                stringRedisTemplate.delete(key);
+                return null;
+            } else {
+                return "内部错误，请联系管理员";
+            }
+        } else {
+            return "内部错误，请联系管理员";
+        }
+    }
+
+    /**
+     * 从数据库中通过用户名或邮箱查找用户详细信息
+     *
+     * @param username 用户名
+     * @return 用户详细信息
+     * @throws UsernameNotFoundException 如果用户未找到则抛出此异常
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = this.findAccountByUsernameOrEmail(username);
@@ -68,5 +117,25 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     private boolean verifyLimit(String ip) {
         String key = Const.VERIFY_EMAIL_LIMIT + ip;
         return flowUtils.limitOnceCheck(key, 60);
+    }
+
+    /**
+     * 查询指定邮箱的用户是否已经存在
+     *
+     * @param email 邮箱
+     * @return 是否存在
+     */
+    private boolean existsAccountByEmail(String email) {
+        return this.baseMapper.exists(Wrappers.<Account>query().eq("email", email));
+    }
+
+    /**
+     * 查询指定用户名的用户是否已经存在
+     *
+     * @param username 用户名
+     * @return 是否存在
+     */
+    private boolean existsAccountByUsername(String username) {
+        return this.baseMapper.exists(Wrappers.<Account>query().eq("username", username));
     }
 }

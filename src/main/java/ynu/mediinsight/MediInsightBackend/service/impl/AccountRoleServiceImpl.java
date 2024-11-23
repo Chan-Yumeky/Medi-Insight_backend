@@ -9,10 +9,17 @@ import ynu.mediinsight.MediInsightBackend.service.AccountRoleService;
 @Service
 public class AccountRoleServiceImpl extends ServiceImpl<AccountRoleMapper, AccountRole>
         implements AccountRoleService {
+
     @Override
     public AccountRole findRIDByUID(int uid) {
         return this.query()
                 .eq("uid", uid)
                 .one();
+    }
+
+    @Override
+    public boolean registerAccountRole(int uid) {
+        AccountRole accountRole = new AccountRole(null, uid, 3);
+        return this.save(accountRole);
     }
 }

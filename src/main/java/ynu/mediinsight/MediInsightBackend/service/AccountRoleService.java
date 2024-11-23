@@ -5,4 +5,6 @@ import ynu.mediinsight.MediInsightBackend.entity.po.AccountRole;
 
 public interface AccountRoleService extends IService<AccountRole> {
     AccountRole findRIDByUID(int uid);
+
+    boolean registerAccountRole(int uid);
 }
