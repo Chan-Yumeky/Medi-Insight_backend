@@ -6,4 +6,6 @@ import ynu.mediinsight.MediInsightBackend.entity.po.Account;
 
 public interface AccountService extends IService<Account>, UserDetailsService {
     Account findAccountByUsernameOrEmail(String text);
+
+    String registerEmailVerifyCode(String type, String email, String ip);
 }

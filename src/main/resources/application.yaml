@@ -13,6 +13,15 @@ spring:
     jwt:
       key: abcdefghijk
       expire: 7
+  mail:
+    host: smtp.163.com
+    username: linxy20040304@163.com
+    password: PXILBFPDDKSNRFAI
+  rabbitmq:
+    addresses: localhost
+    username: admin
+    password: admin
+    virtual-host: /
 
 springdoc:
   swagger-ui:
