@@ -17,7 +17,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ynu.mediinsight.MediInsightBackend.dto.response.AuthorizeVO;
 import ynu.mediinsight.MediInsightBackend.entity.RestBean;
+import ynu.mediinsight.MediInsightBackend.entity.po.Account;
+import ynu.mediinsight.MediInsightBackend.entity.po.AccountRole;
+import ynu.mediinsight.MediInsightBackend.entity.po.Role;
 import ynu.mediinsight.MediInsightBackend.filter.JwtAuthorizeFilter;
+import ynu.mediinsight.MediInsightBackend.service.AccountRoleService;
+import ynu.mediinsight.MediInsightBackend.service.AccountService;
+import ynu.mediinsight.MediInsightBackend.service.RoleService;
 import ynu.mediinsight.MediInsightBackend.utils.JwtUtils;
 
 import java.io.IOException;
@@ -34,6 +40,15 @@ public class SecurityConfiguration {
 
     @Resource
     JwtAuthorizeFilter jwtAuthorizeFilter;
+
+    @Resource
+    AccountService accountService;
+
+    @Resource
+    RoleService roleService;
+
+    @Resource
+    AccountRoleService accountRoleService;
 
     /**
      * 配置安全过滤链，定义了接口的权限控制规则、登录、登出逻辑以及会话管理策略
@@ -93,12 +108,15 @@ public class SecurityConfiguration {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         User user = (User) authentication.getPrincipal();
-        String token = jwtUtils.createJwt(user, 1, "JackieLin");
+        Account account = accountService.findAccountByUsernameOrEmail(user.getUsername());
+        AccountRole accountRole = accountRoleService.findRIDByUID(account.getId());
+        Role role = roleService.findRoleByRID(accountRole.getRid());
+        String token = jwtUtils.createJwt(user, account.getId(), account.getUsername());
         AuthorizeVO authorizeVO = new AuthorizeVO();
         authorizeVO.setExpire(jwtUtils.expireTime());
-        authorizeVO.setRole("");
+        authorizeVO.setRole(role.getRolename());
         authorizeVO.setToken(token);
-        authorizeVO.setUsername("JackieLin");
+        authorizeVO.setUsername(account.getUsername());
         response.getWriter().write(RestBean.success(authorizeVO).asJsonString());
     }
 

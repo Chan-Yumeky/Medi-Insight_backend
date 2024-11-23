@@ -2,7 +2,7 @@ services:
   mysql:
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=DSsysBackend'
+      - 'MYSQL_DATABASE=MediInsight'
       - 'MYSQL_PASSWORD=secret'
       - 'MYSQL_ROOT_PASSWORD=12345678'
       - 'MYSQL_USER=myuser'
