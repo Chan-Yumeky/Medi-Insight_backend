@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ynu.mediinsight.MediInsightBackend.dto.request.ConfirmResetRO;
 import ynu.mediinsight.MediInsightBackend.dto.request.EmailRegisterRO;
+import ynu.mediinsight.MediInsightBackend.dto.request.EmailResetRO;
 import ynu.mediinsight.MediInsightBackend.entity.po.Account;
 import ynu.mediinsight.MediInsightBackend.mapper.AccountMapper;
 import ynu.mediinsight.MediInsightBackend.service.AccountRoleService;
@@ -112,6 +114,40 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
                 .withUsername(username)
                 .password(account.getPassword())
                 .build();
+    }
+
+    /**
+     * 邮件验证码重置密码操作，需要检查验证码是否正确
+     *
+     * @param ro 重置基本信息
+     * @return 操作结果，null表示正常，否则为错误原因
+     */
+    @Override
+    public String resetEmailAccountPassword(EmailResetRO ro) {
+        String verify = resetConfirm(new ConfirmResetRO(ro.getEmail(), ro.getCode()));
+        if (verify != null) return verify;
+        String email = ro.getEmail();
+        String password = encoder.encode(ro.getPassword());
+        boolean update = this.update().eq("email", email).set("password", password).update();
+        if (update) {
+            stringRedisTemplate.delete(Const.VERIFY_EMAIL_DATA + email);
+        }
+        return update ? null : "更新失败，请联系管理员";
+    }
+
+    /**
+     * 重置密码确认操作，验证验证码是否正确
+     *
+     * @param ro 验证基本信息
+     * @return 操作结果，null表示正常，否则为错误原因
+     */
+    @Override
+    public String resetConfirm(ConfirmResetRO ro) {
+        String email = ro.getEmail();
+        String code = stringRedisTemplate.opsForValue().get(Const.VERIFY_EMAIL_DATA + email);
+        if (code == null) return "请先获取验证码";
+        if (!code.equals(ro.getCode())) return "验证码错误，请重新输入";
+        return null;
     }
 
     private boolean verifyLimit(String ip) {

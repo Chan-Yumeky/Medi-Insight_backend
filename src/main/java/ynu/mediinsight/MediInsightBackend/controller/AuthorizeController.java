@@ -5,12 +5,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ynu.mediinsight.MediInsightBackend.dto.request.ConfirmResetRO;
 import ynu.mediinsight.MediInsightBackend.dto.request.EmailRegisterRO;
+import ynu.mediinsight.MediInsightBackend.dto.request.EmailResetRO;
 import ynu.mediinsight.MediInsightBackend.entity.RestBean;
 import ynu.mediinsight.MediInsightBackend.service.AccountService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -34,7 +37,7 @@ public class AuthorizeController {
      */
     @GetMapping("/ask-code")
     public RestBean<Void> askVerifyCode(@RequestParam @Email String email,
-                                        @RequestParam @Pattern(regexp = "(register|resrt)") String type,
+                                        @RequestParam @Pattern(regexp = "(register|reset)") String type,
                                         HttpServletRequest request) {
         return this.messageHandle(() ->
                 accountService.registerEmailVerifyCode(type, email, request.getRemoteAddr()));
@@ -48,8 +51,29 @@ public class AuthorizeController {
      */
     @PostMapping("/register")
     public RestBean<Void> register(@RequestBody @Valid EmailRegisterRO ro) {
-        return this.messageHandle(() ->
-                accountService.registerEmailAccount(ro));
+        return this.messageHandle(ro, accountService::registerEmailAccount);
+    }
+
+    /**
+     * 执行密码重置确认，检查验证码是否正确
+     *
+     * @param ro 密码重置信息
+     * @return 是否操作成功
+     */
+    @PostMapping("/reset-confirm")
+    public RestBean<Void> resetConfirm(@RequestBody @Valid ConfirmResetRO ro) {
+        return this.messageHandle(ro, accountService::resetConfirm);
+    }
+
+    /**
+     * 执行密码重置操作
+     *
+     * @param ro 密码重置信息
+     * @return 是否操作成功
+     */
+    @PostMapping("/reset-password")
+    public RestBean<Void> resetPassword(@RequestBody @Valid EmailResetRO ro) {
+        return this.messageHandle(ro, accountService::resetEmailAccountPassword);
     }
 
     /**
@@ -61,5 +85,9 @@ public class AuthorizeController {
     private RestBean<Void> messageHandle(Supplier<String> action) {
         String message = action.get();
         return message == null ? RestBean.success() : RestBean.failure(400, message);
+    }
+
+    private <T> RestBean<Void> messageHandle(T vo, Function<T, String> function) {
+        return messageHandle(() -> function.apply(vo));
     }
 }
