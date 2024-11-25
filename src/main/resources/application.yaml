@@ -20,7 +20,7 @@ spring:
   rabbitmq:
     addresses: localhost
     username: admin
-    password: admin
+    password: 12345678
     virtual-host: /
 
 springdoc:
