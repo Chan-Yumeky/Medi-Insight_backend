@@ -28,8 +28,8 @@ public class Account implements BaseData {
     String idCode;
     @TableField("email")
     String email;
-    @TableField("telephone")
-    String telephone;
+    @TableField("phone")
+    String phone;
     @TableField("address")
     String address;
     @TableField("birthday")
