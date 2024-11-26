@@ -14,9 +14,11 @@ import ynu.mediinsight.MediInsightBackend.dto.request.ConfirmResetRO;
 import ynu.mediinsight.MediInsightBackend.dto.request.EmailRegisterRO;
 import ynu.mediinsight.MediInsightBackend.dto.request.EmailResetRO;
 import ynu.mediinsight.MediInsightBackend.entity.po.Account;
+import ynu.mediinsight.MediInsightBackend.entity.po.Role;
 import ynu.mediinsight.MediInsightBackend.mapper.AccountMapper;
 import ynu.mediinsight.MediInsightBackend.service.AccountRoleService;
 import ynu.mediinsight.MediInsightBackend.service.AccountService;
+import ynu.mediinsight.MediInsightBackend.service.RoleService;
 import ynu.mediinsight.MediInsightBackend.utils.Const;
 import ynu.mediinsight.MediInsightBackend.utils.FlowUtils;
 
@@ -42,6 +44,9 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Resource
     AccountRoleService accountRoleService;
+
+    @Resource
+    RoleService roleService;
 
     @Override
     public Account findAccountByUsernameOrEmail(String text) {
@@ -110,9 +115,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         Account account = this.findAccountByUsernameOrEmail(username);
         if (account == null)
             throw new UsernameNotFoundException("用户名或密码错误");
+        Role role = roleService.findRoleByRID(accountRoleService.findRIDByUID(account.getId()).getRid());
         return User
                 .withUsername(username)
                 .password(account.getPassword())
+                .roles(role.getRolename())
                 .build();
     }
 
