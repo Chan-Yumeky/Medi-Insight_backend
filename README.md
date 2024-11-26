@@ -6,9 +6,9 @@ This one is a back-end project for Medi-Insight.
 
 ### 本仓库采用了 `Springboot3` + `Vue3` 框架来实现前后端分离项目
 
-### 建议
+### 提示
 
-由于包含系统包含管理员、医生和患者三种角色，建议对每个角色的业务接口按照如下命名方式：
+由于包含系统包含管理员、医生和患者三种角色，已经对每种角色进行权限隔离，每个角色的业务接口需要按照如下命名方式：
 
 ```bash
 /api/admin/** or /api/doctor/** or /api/patient/**

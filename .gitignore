@@ -34,3 +34,6 @@ build/
 
 ### Test Controller ###
 /src/main/java/ynu/mediinsight/MediInsightBackend/controller/TestController.java
+/src/main/java/ynu/mediinsight/MediInsightBackend/controller/AdminTestController.java
+/src/main/java/ynu/mediinsight/MediInsightBackend/controller/DoctorTestController.java
+/src/main/java/ynu/mediinsight/MediInsightBackend/controller/PatientTestController.java
