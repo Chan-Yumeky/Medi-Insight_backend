@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class AuthorizeVO {
+    int id;
     String username;
     String role;
     String token;
