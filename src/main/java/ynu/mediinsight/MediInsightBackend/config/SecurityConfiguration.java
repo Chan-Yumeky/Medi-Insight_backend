@@ -116,6 +116,7 @@ public class SecurityConfiguration {
         Role role = roleService.findRoleByRID(accountRole.getRid());
         String token = jwtUtils.createJwt(user, account.getId(), account.getUsername());
         AuthorizeVO authorizeVO = account.asViewObject(AuthorizeVO.class, vo -> {
+            vo.setId(account.getId());
             vo.setExpire(jwtUtils.expireTime());
             vo.setToken(token);
             vo.setRole(role.getRolename());
