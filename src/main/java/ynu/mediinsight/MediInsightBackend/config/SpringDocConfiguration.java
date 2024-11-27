@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "${api.title: DSsys_Backend}",
+                title = "${api.title: Medi-Insight}",
                 version = "${api.version: v1}",
-                description = "${api.description: 这里是软件项目管理大作业springboot后端项目}",
+                description = "${api.description: 这里是新技术专题MediInsight大作业springboot后端项目}",
                 contact = @Contact(name = "JackieLin", url = "https://github.com/JackieLin2004"),
                 license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0")
         )
