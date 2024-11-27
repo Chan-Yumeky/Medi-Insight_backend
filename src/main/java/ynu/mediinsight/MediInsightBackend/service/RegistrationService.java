@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface RegistrationService extends IService<Registration> {
     List<Registration> getAllWaitingRegistration();
+
+    List<Registration> getRegistrationHistoryByPatientId(int id);
 }

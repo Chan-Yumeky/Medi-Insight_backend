@@ -20,4 +20,9 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     public List<Registration> getAllWaitingRegistration() {
         return this.registrationMapper.selectAllWaitingRegistration();
     }
+
+    @Override
+    public List<Registration> getRegistrationHistoryByPatientId(int id) {
+        return this.registrationMapper.selectRegistrationHistoryByPatientId(id);
+    }
 }
