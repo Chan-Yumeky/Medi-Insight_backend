@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/MediInsight
+    url: jdbc:mysql://113.45.193.21:3306/MediInsight
     username: root
-    password: 12345678
+    password: PSfQEwrRRIL6KQEhpZ4n5q71Y4QFeorqYP2JAv26VxE
     driver-class-name: com.mysql.cj.jdbc.Driver
   security:
     filter:
@@ -18,10 +18,15 @@ spring:
     username: linxy20040304@163.com
     password: PXILBFPDDKSNRFAI
   rabbitmq:
-    addresses: localhost
-    username: admin
-    password: 12345678
+    addresses: 113.45.193.21
+    username: root
+    password: PSfQEwrRRIL6KQEhpZ4n5q71Y4QFeorqYP2JAv26VxE
     virtual-host: /
+  data:
+    redis:
+      host: 113.45.193.21
+      password: PSfQEwrRRIL6KQEhpZ4n5q71Y4QFeorqYP2JAv26VxE
+      port: 6379
 
 springdoc:
   swagger-ui:

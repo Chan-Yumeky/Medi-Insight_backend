@@ -2,10 +2,8 @@ package ynu.mediinsight.MediInsightBackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ynu.mediinsight.MediInsightBackend.dto.response.RegistrationVO;
 import ynu.mediinsight.MediInsightBackend.entity.po.Registration;
 import ynu.mediinsight.MediInsightBackend.service.RegistrationService;
 
@@ -28,7 +26,7 @@ public class RegistrationController {
      */
     @Operation(summary = "获取所有等待挂号的患者", description = "获取所有等待挂号的患者")
     @GetMapping("/registrations/waiting")
-    public List<Registration> getWaitingRegistrations() {
+    public List<RegistrationVO> getWaitingRegistrations() {
         return this.registrationService.getAllWaitingRegistration();
     }
 
@@ -40,7 +38,17 @@ public class RegistrationController {
      */
     @Operation(summary = "根据id获取患者的挂号历史", description = "根据id获取患者的挂号历史")
     @GetMapping("/registrations/history/{id}")
-    public List<Registration> getRegistrationById(@PathVariable int id) {
+    public List<RegistrationVO> getRegistrationById(@PathVariable int id) {
         return this.registrationService.getRegistrationHistoryByPatientId(id);
+    }
+
+    @PostMapping("/registrations")
+    public String addRegistration(@RequestBody Registration registration) {
+        return this.registrationService.addRegistration(registration);
+    }
+
+    @PostMapping("/registrations/record")
+    public String finishRecord(@RequestBody Registration registration) {
+        return this.registrationService.finishRecord(registration);
     }
 }

@@ -1,19 +1,19 @@
-package ynu.mediinsight.MediInsightBackend.entity.po;
+package ynu.mediinsight.MediInsightBackend.dto.response;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import ynu.mediinsight.MediInsightBackend.entity.po.Diagnosis;
+import ynu.mediinsight.MediInsightBackend.entity.po.Drug;
+import ynu.mediinsight.MediInsightBackend.entity.po.Procedure;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class Registration {
-    @TableId(type = IdType.AUTO)
+public class RegistrationVO {
     private Integer id;
-    private Integer pid;
-    private Integer did;
+    private PatientVO patient;
+    private DoctorVO doctor;
     private int status;
     private int source;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
