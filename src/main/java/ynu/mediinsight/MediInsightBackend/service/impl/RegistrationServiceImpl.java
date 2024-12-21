@@ -66,13 +66,7 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     }
 
     @Override
-    public String addRegistration(Registration registration) {
-
-        return "";
-    }
-
-    @Override
-    public String finishRecord(Registration registration) {
-        return "";
+    public void addRegistration(Registration registration) {
+        this.registrationMapper.insert(registration);
     }
 }

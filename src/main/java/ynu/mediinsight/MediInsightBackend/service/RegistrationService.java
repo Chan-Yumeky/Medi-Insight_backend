@@ -12,6 +12,4 @@ public interface RegistrationService extends IService<Registration> {
     List<RegistrationVO> getRegistrationHistoryByPatientId(int id);
 
     String addRegistration(Registration registration);
-
-    String finishRecord(Registration registration);
 }

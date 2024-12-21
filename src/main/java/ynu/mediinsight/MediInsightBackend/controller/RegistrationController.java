@@ -42,9 +42,11 @@ public class RegistrationController {
         return this.registrationService.getRegistrationHistoryByPatientId(id);
     }
 
+    @Operation(summary = "添加", description = "新增挂号")
     @PostMapping("/registrations")
     public String addRegistration(@RequestBody Registration registration) {
-        return this.registrationService.addRegistration(registration);
+        this.registrationService.addRegistration(registration);
+        return "ok";
     }
 
 }
