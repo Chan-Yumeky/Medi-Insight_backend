@@ -1,10 +1,12 @@
 package ynu.mediinsight.MediInsightBackend.utils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ynu.mediinsight.MediInsightBackend.dto.request.DrugRO;
 import ynu.mediinsight.MediInsightBackend.dto.response.DoctorVO;
 import ynu.mediinsight.MediInsightBackend.dto.response.PatientVO;
 import ynu.mediinsight.MediInsightBackend.dto.response.RegistrationVO;
 import ynu.mediinsight.MediInsightBackend.entity.po.Account;
+import ynu.mediinsight.MediInsightBackend.entity.po.Drug;
 import ynu.mediinsight.MediInsightBackend.entity.po.Registration;
 
 import java.util.Date;
@@ -48,4 +50,5 @@ public class Proxy {
         registrationVO.setEndTime(registration.getEndTime());
         return registrationVO;
     }
+
 }

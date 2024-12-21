@@ -47,8 +47,4 @@ public class RegistrationController {
         return this.registrationService.addRegistration(registration);
     }
 
-    @PostMapping("/registrations/record")
-    public String finishRecord(@RequestBody Registration registration) {
-        return this.registrationService.finishRecord(registration);
-    }
 }

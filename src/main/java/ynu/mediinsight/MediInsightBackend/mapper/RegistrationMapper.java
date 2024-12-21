@@ -3,6 +3,7 @@ package ynu.mediinsight.MediInsightBackend.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import ynu.mediinsight.MediInsightBackend.entity.po.Registration;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface RegistrationMapper extends BaseMapper<Registration> {
 
     @Select("select * from registration as r where r.pid=#{id} and status=1")
     List<Registration> selectRegistrationHistoryByPatientId(int id);
+
+    @Update("update registration set status=1,did=#{did},start_time=#{formattedDate},end_time=#{formattedDate} where id=#{id}")
+    void updateRegistrationById(Integer id, Integer did, String formattedDate);
 }
