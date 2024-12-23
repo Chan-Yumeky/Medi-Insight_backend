@@ -1,5 +1,6 @@
 package ynu.mediinsight.MediInsightBackend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import ynu.mediinsight.MediInsightBackend.dto.request.ConfirmResetRO;
 import ynu.mediinsight.MediInsightBackend.dto.request.EmailRegisterRO;
 import ynu.mediinsight.MediInsightBackend.dto.request.EmailResetRO;
+import ynu.mediinsight.MediInsightBackend.dto.response.DoctorVO;
 import ynu.mediinsight.MediInsightBackend.entity.po.Account;
 import ynu.mediinsight.MediInsightBackend.entity.po.Role;
 import ynu.mediinsight.MediInsightBackend.mapper.AccountMapper;
@@ -21,11 +23,14 @@ import ynu.mediinsight.MediInsightBackend.service.AccountService;
 import ynu.mediinsight.MediInsightBackend.service.RoleService;
 import ynu.mediinsight.MediInsightBackend.utils.Const;
 import ynu.mediinsight.MediInsightBackend.utils.FlowUtils;
+import ynu.mediinsight.MediInsightBackend.utils.Proxy;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> implements AccountService {
@@ -155,6 +160,20 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         if (code == null) return "请先获取验证码";
         if (!code.equals(ro.getCode())) return "验证码错误，请重新输入";
         return null;
+    }
+
+    @Override
+    public List<DoctorVO> getAllDoctors() {
+        List<Integer> doctorIDs = accountRoleService.getAllDoctorsID();
+        if (doctorIDs.isEmpty()) return null;
+
+        QueryWrapper<Account> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("id", doctorIDs);
+
+        List<Account> accounts = this.list(queryWrapper);
+        return accounts.stream()
+                .map(Proxy::account2Doctor)
+                .collect(Collectors.toList());
     }
 
     private boolean verifyLimit(String ip) {

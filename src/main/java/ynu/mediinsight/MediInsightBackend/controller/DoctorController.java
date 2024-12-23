@@ -10,6 +10,8 @@ import ynu.mediinsight.MediInsightBackend.entity.po.Account;
 import ynu.mediinsight.MediInsightBackend.service.AccountService;
 import ynu.mediinsight.MediInsightBackend.utils.Proxy;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth/api")
 public class DoctorController {
@@ -31,5 +33,15 @@ public class DoctorController {
         Account account = this.accountService.getById(id);
         DoctorVO doctorVO = Proxy.account2Doctor(account);
         return doctorVO;
+    }
+
+    /**
+     * 获取所有医生信息
+     * @return 医生信息列表
+     */
+    @Operation(summary = "小程序端获取所有医生信息", description = "小程序端获取所有医生信息")
+    @GetMapping("get-doctors")
+    public List<DoctorVO> getAllDoctors() {
+        return accountService.getAllDoctors();
     }
 }
