@@ -44,4 +44,14 @@ public class DoctorController {
     public List<DoctorVO> getAllDoctors() {
         return accountService.getAllDoctors();
     }
+
+    /**
+     * 获取所有专家医生信息
+     * @return 专家医生信息列表
+     */
+    @Operation(summary = "获取所有专家医生列表", description = "用于管理员排班和专家医生查看排班")
+    @GetMapping("/doctors/experts")
+    public List<DoctorVO> getExpertDoctors() {
+        return accountService.getExpertDoctors();
+    }
 }

@@ -27,6 +27,8 @@ spring:
       host: 113.45.193.21
       password: PSfQEwrRRIL6KQEhpZ4n5q71Y4QFeorqYP2JAv26VxE
       port: 6379
+#  jackson:
+#    time-zone: GMT+8
 
 springdoc:
   swagger-ui:

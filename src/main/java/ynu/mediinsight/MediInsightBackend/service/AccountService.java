@@ -22,4 +22,10 @@ public interface AccountService extends IService<Account>, UserDetailsService {
     String resetEmailAccountPassword(EmailResetRO ro);
 
     List<DoctorVO> getAllDoctors();
+
+    /**
+     * 获取所有专家医生列表
+     * @return 专家医生列表
+     */
+    List<DoctorVO> getExpertDoctors();
 }

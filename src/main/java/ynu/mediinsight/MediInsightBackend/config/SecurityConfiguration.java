@@ -121,6 +121,8 @@ public class SecurityConfiguration {
             vo.setToken(token);
             vo.setRole(role.getRolename());
             vo.setUsername(account.getUsername());
+            vo.setIsExpert(account.getIsExpert());
+            vo.setDepartment(account.getDepartment());
         });
         response.getWriter().write(RestBean.success(authorizeVO).asJsonString());
     }

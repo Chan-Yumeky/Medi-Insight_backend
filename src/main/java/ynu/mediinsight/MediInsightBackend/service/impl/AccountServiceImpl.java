@@ -176,6 +176,20 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<DoctorVO> getExpertDoctors() {
+        // 查询条件：isExpert = 1
+        List<Account> expertAccounts = this.baseMapper.selectList(
+            new QueryWrapper<Account>()
+                .eq("isExpert", 1)
+        );
+        
+        // 转换为DoctorVO列表
+        return expertAccounts.stream()
+                .map(Proxy::account2Doctor)
+                .collect(Collectors.toList());
+    }
+
     private boolean verifyLimit(String ip) {
         String key = Const.VERIFY_EMAIL_LIMIT + ip;
         return flowUtils.limitOnceCheck(key, 60);

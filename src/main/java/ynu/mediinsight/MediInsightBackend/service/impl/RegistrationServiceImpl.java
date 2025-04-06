@@ -2,6 +2,7 @@ package ynu.mediinsight.MediInsightBackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ynu.mediinsight.MediInsightBackend.dto.response.DoctorVO;
 import ynu.mediinsight.MediInsightBackend.dto.response.PatientVO;
 import ynu.mediinsight.MediInsightBackend.dto.response.RegistrationVO;
@@ -20,12 +21,15 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     private final DiagnosisMapper diagnosisMapper;
     private final ProcedureMapper procedureMapper;
     private final AccountMapper accountMapper;
-    public RegistrationServiceImpl(RegistrationMapper registrationMapper, DrugMapper drugMapper, DiagnosisMapper diagnosisMapper, ProcedureMapper procedureMapper, AccountMapper accountMapper) {
+    private final ExpertScheduleMapper expertScheduleMapper;
+
+    public RegistrationServiceImpl(RegistrationMapper registrationMapper, DrugMapper drugMapper, DiagnosisMapper diagnosisMapper, ProcedureMapper procedureMapper, AccountMapper accountMapper, ExpertScheduleMapper expertScheduleMapper) {
         this.registrationMapper = registrationMapper;
         this.drugMapper = drugMapper;
         this.diagnosisMapper = diagnosisMapper;
         this.procedureMapper = procedureMapper;
         this.accountMapper = accountMapper;
+        this.expertScheduleMapper = expertScheduleMapper;
     }
 
     @Override
@@ -66,7 +70,45 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     }
 
     @Override
+    @Transactional
     public void addRegistration(Registration registration) {
+        // 获取医生信息
+        Account doctor = accountMapper.selectById(registration.getDid());
+        if (doctor == null) {
+            throw new RuntimeException("医生不存在");
+        }
+
+        // 添加专家预约验证逻辑
+        if (doctor.getIsExpert() == 1) {
+            validateExpertRegistration(registration);
+        }
+        
+        // 继续原有的预约逻辑
         this.registrationMapper.insert(registration);
+    }
+
+    // 新增专家预约验证方法
+    private void validateExpertRegistration(Registration registration) {
+        // 检查是否在专家排班时间内
+        ExpertSchedule schedule = expertScheduleMapper.getAvailableSchedule(
+            registration.getDid(),
+            registration.getStartTime(),
+            registration.getEndTime()
+        );
+        
+        if (schedule == null) {
+            throw new RuntimeException("该时段不在专家出诊时间内");
+        }
+        
+        // 检查预约人数是否已满
+        if (schedule.getCurrentPatients() >= schedule.getMaxPatients()) {
+            throw new RuntimeException("该时段预约已满");
+        }
+        
+        // 更新预约人数
+        int updated = expertScheduleMapper.incrementCurrentPatients(schedule.getId());
+        if (updated == 0) {
+            throw new RuntimeException("预约失败，请重试");
+        }
     }
 }

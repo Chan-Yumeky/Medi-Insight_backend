@@ -11,4 +11,8 @@ public class AuthorizeVO {
     String role;
     String token;
     Date expire;
+    
+    // 新增字段
+    Integer isExpert;
+    String department;
 }
